@@ -10,3 +10,5 @@ notifications:
       - daibk115@gmail.com
     on_success: change
     on_failure: always
+after_success:
+- coveralls
