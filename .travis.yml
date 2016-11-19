@@ -4,7 +4,7 @@ python:
   - "3.4"
 install:
 - pip install coveralls
-script: coverage run --source=. -m unittest discover -s fctests/
+script: coverage run --source=. -m unittest discover -s fcap/tests/
 notifications:
   email:
     recipients:
