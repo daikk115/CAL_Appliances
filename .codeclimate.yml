@@ -1,4 +1,3 @@
----
 engines:
   duplication:
     enabled: true
@@ -7,8 +6,9 @@ engines:
       - python
   fixme:
     enabled: true
+  radon:
+    enabled: true
 ratings:
   paths:
-  - "**.js"
   - "**.py"
 exclude_paths: []

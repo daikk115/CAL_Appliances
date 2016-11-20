@@ -2,7 +2,9 @@
 
 FCAP được phát triển dựa trên Django web frame work với các module cơ bản sau:
 
-![fcap code structure](/home/daidv/GITHUB/CAL_Appliances/describes/structure.png  "FCAP")
+![fcap code structure](structure.png  "FCAP")
+
+Cấu trúc trên một phần được tạo dựa trên cấu trúc [project template](https://github.com/Mischback/django-project-skeleton) của tác giả Mischback
 
 Trong đó:
 
