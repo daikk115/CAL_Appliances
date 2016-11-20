@@ -5,13 +5,13 @@ Meta
 ----
 
 Author:
-    Mischback
+    Dai Dang Van
 
 Status:
-    maintained, in development
+    in development
 
 Version:
-    1.1
+    0.1
 
 
 Usage
