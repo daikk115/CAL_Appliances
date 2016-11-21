@@ -8,7 +8,8 @@ script: coverage run --source=. -m unittest discover -s fcap/tests/
 notifications:
   email:
     recipients:
-      - daikk115@gmail.com
+      - hieulq19@gmail.com
+      - daibk115@gmail.com
     on_success: change
     on_failure: always
 after_success:
