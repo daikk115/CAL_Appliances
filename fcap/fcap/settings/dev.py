@@ -1,6 +1,3 @@
-# Import some utility functions
-from os.path import join
-# Fetch our common settings
 from base import *
 
 # #########################################################
@@ -12,3 +9,8 @@ DEBUG = True
 # ##### APPLICATION CONFIGURATION #########################
 
 INSTALLED_APPS = DEFAULT_APPS
+
+INSTALLED_APPS.extend([
+    'authentication',
+    'management',
+])

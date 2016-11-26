@@ -1,0 +1,29 @@
+{% block javascript %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'management/base/css/popup.css' %}">
+{% endblock %}
+<button type="button" class="button" style="float: right; margin-right: 5px;">
+	<a href="#popup1" style="color: white;">New App</a>
+</button>
+<button type="button" class="button" style="float: right; margin-right: 5px;">Delete Apps</button>
+<div id="popup1" class="overlay">
+    <div class="popup">
+        <a class="close" href="#">&times;</a>
+        <div class="form-style-2">
+		<div class="form-style-2-heading">New Application</div>
+		<form action="{{ request.build_absolute_uri }}" method="post">
+			{% csrf_token %}
+			<label for="field1">
+				<span>field1 <span class="required">*</span></span>
+				<input type="text" class="input-field" name="field1" value="" />
+			</label>
+			<label for="field2">
+				<span>field1 <span class="required">*</span></span>
+				<input type="text" class="input-field" name="field1" value="" />
+			</label>
+			<label><span>&nbsp;</span><input type="submit" value="Submit"/></label>
+		</form>
+		</div>
+    </div>
+</div>
+</script>
