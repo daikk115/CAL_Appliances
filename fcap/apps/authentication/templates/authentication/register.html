@@ -1,0 +1,19 @@
+{% extends "authentication/index.html" %}
+{% block js %}
+{% load static %}
+<script src="{% static 'js/check-form.js' %}"></script>
+{% endblock %}
+{% block template %}
+<div class="login-page">
+  <div class="form">
+    <form action="" method="post">
+      <input type="text" placeholder="Name" name="name"/>
+      <input type="password" placeholder="Password" name="password1"/>
+      <input type="password" placeholder="Confirm password" name="password2"/>
+      <input type="text" placeholder="Full Name" name="fullname"/>
+      <button>Join</button>
+      <p class="message">Already registered? <a href="{% url 'login' %}">Sign In</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}
