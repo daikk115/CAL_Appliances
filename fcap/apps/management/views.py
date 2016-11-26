@@ -8,13 +8,7 @@ class AppView(TemplateView):
     def get(self, request, *args, **kwargs):
         table = {
             'category': ['Name', 'Flavor', 'IP Address', 'Actions'],
-            'rows': [
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
@@ -24,13 +18,7 @@ class AppView(TemplateView):
     def post(self, request, *args, **kwargs):
         table = {
             'category': ['App Name', 'Flavor', 'IP Address', 'Actions'],
-            'rows': [
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4'],
-                ['1', '2', '3', '4']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
@@ -45,13 +33,7 @@ class NetworkView(TemplateView):
     def get(self, request, *args, **kwargs):
         table = {
             'category': ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions'],
-            'rows': [
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
@@ -61,13 +43,7 @@ class NetworkView(TemplateView):
     def post(self, request, *args, **kwargs):
         table = {
             'category': ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions'],
-            'rows': [
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6'],
-                ['1', '2', '3', '4', '5', '6']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
@@ -82,11 +58,7 @@ class ProviderView(TemplateView):
     def get(self, request, *args, **kwargs):
         table = {
             'category': ['Name', 'Cloud Config', 'Actions'],
-            'rows': [
-                ['1', '2', '3'],
-                ['1', '2', '3'],
-                ['1', '2', '3']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
@@ -96,11 +68,7 @@ class ProviderView(TemplateView):
     def post(self, request, *args, **kwargs):
         table = {
             'category': ['Name', 'Cloud Config', 'Actions'],
-            'rows': [
-                ['1', '2', '3'],
-                ['1', '2', '3'],
-                ['1', '2', '3']
-            ]
+            'rows': []
         }
         return self.render_to_response({
             'table': table,
