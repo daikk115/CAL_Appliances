@@ -4,10 +4,11 @@ from django.views.generic import TemplateView
 class AppView(TemplateView):
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('app')
+    category =  ['Name', 'Flavor', 'IP Address', 'Actions']
 
     def get(self, request, *args, **kwargs):
         table = {
-            'category': ['Name', 'Flavor', 'IP Address', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -17,7 +18,7 @@ class AppView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         table = {
-            'category': ['App Name', 'Flavor', 'IP Address', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -29,10 +30,11 @@ class AppView(TemplateView):
 class NetworkView(TemplateView):
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('network')
+    category = ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions']
 
     def get(self, request, *args, **kwargs):
         table = {
-            'category': ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -42,7 +44,7 @@ class NetworkView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         table = {
-            'category': ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -54,10 +56,11 @@ class NetworkView(TemplateView):
 class ProviderView(TemplateView):
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('provider')
+    category = ['Name', 'Cloud Config', 'Actions']
 
     def get(self, request, *args, **kwargs):
         table = {
-            'category': ['Name', 'Cloud Config', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -67,7 +70,7 @@ class ProviderView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         table = {
-            'category': ['Name', 'Cloud Config', 'Actions'],
+            'category': self.category,
             'rows': []
         }
         return self.render_to_response({
@@ -80,7 +83,4 @@ class AboutView(TemplateView):
     template_name = 'management/about.html'
 
     def get(self, request, *args, **kwargs):
-        table = {
-            'category': ['App Name', 'Flavor', 'IP Address', 'Actions']
-        }
         return self.render_to_response({})
