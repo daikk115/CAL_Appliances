@@ -1,0 +1,30 @@
+{% extends 'management/base.html' %}
+{% block main %}
+    <!--Actually, we DO NOT need to check page or table-->
+    <!--because we alway put table and page when we make a HTML response-->
+    <div class="header_table">
+        {% if page %}
+            {% include page %}
+        {% endif %}
+    </div>
+    <div style="border: thin">
+        {% if table %}
+        <table cellspacing="0" style="width: 100%">
+            <thead>
+                {% for category in table.category  %}
+                    <th>{{ category }}</th>
+                {% endfor %}
+            </thead>
+            <tbody>
+                {% for columns in table.rows  %}
+                    <tr>
+                        {% for column in columns  %}
+                        <td>{{ column }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+{% endblock %}
