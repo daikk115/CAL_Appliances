@@ -10,8 +10,3 @@ DATABASES = {
         'PORT': 3306,
     }
 }
-
-INSTALLED_APPS.extend([
-    'authentication',
-    'management',
-])
