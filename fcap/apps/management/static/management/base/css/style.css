@@ -287,7 +287,7 @@ body {
 .content {
 	padding: 0px 0;
 	background: #FFF;
-	min-height: 300px;;
+	height: 100%;
 	border-radius: 6px;
 	-webkit-border-radius: 6px;
 	-moz-border-rfadius: 6px;

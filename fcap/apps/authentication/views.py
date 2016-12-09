@@ -1,37 +1,56 @@
 from django.views.generic import TemplateView
-from django.shortcuts import redirect, render
-from django.http import HttpResponse
-from .forms import RegisterForm, LoginForm
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST
 
 
 class LoginView(TemplateView):
     template_name = 'authentication/login.html'
 
     def get(self, request, *args, **kwargs):
-        form = LoginForm()
-        return self.render_to_response({
-            'form': form
-        })
+        return self.render_to_response({})
 
     def post(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            # user = User.objects.get(username=username)
-            # user.check()
-            return HttpResponse("{}-{}".format(username, password))
-        return self.render_to_response({})
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return redirect('/auth/login')
 
 
 class RegisterView(TemplateView):
     template_name = 'authentication/register.html'
 
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return self.render_to_response({
-            'form': form
-        })
+        return self.render_to_response({})
 
     def post(self, request, *args, **kwargs):
-        return self.render_to_response({})
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+
+        user = User(
+            username=username,
+            first_name=firstname,
+            last_name=lastname
+        )
+        user.set_password(password1)
+        user.save()
+        return redirect('/auth/login')
+
+
+@require_POST
+def user_exists(request):
+    user_count = User.objects.filter(
+        username=request.POST.get('username')).count()
+    if user_count == 0:
+        return False
+    return True
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')

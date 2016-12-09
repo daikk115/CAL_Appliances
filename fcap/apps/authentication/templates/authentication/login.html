@@ -3,7 +3,8 @@
 <div class="login-page">
   <div class="form">
     <form action="" method="post">
-      <input type="text" placeholder="Username" name="username"/>
+      {% csrf_token %}
+      <input type="text" placeholder="Login Name" name="username"/>
       <input type="password" placeholder="Password" name="password"/>
       <button>Login</button>
         <br/>

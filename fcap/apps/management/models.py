@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Provider(models.Model):
@@ -11,7 +12,7 @@ class Provider(models.Model):
     name = models.TextField(unique=True)
     config = models.TextField()
     description = models.TextField()
-    username = models.ForeignKey('authentication.User')
+    username = models.ForeignKey(User)
 
     USERNAME_FIELD = 'name'
 

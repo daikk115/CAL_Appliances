@@ -1,7 +1,9 @@
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class AppView(TemplateView):
+class AppView(LoginRequiredMixin, TemplateView):
+    login_url = '/auth/login/'
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('app')
     category =  ['Name', 'Flavor', 'IP Address', 'Actions']
@@ -27,7 +29,8 @@ class AppView(TemplateView):
         })
 
 
-class NetworkView(TemplateView):
+class NetworkView(LoginRequiredMixin, TemplateView):
+    login_url = '/auth/login/'
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('network')
     category = ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions']
@@ -53,7 +56,8 @@ class NetworkView(TemplateView):
         })
 
 
-class ProviderView(TemplateView):
+class ProviderView(LoginRequiredMixin, TemplateView):
+    login_url = '/auth/login/'
     template_name = 'management/index.html'
     page = "management/btn_and_popup_{}.html".format('provider')
     category = ['Name', 'Cloud Config', 'Actions']
@@ -79,7 +83,7 @@ class ProviderView(TemplateView):
         })
 
 
-class AboutView(TemplateView):
+class AboutView(LoginRequiredMixin, TemplateView):
     template_name = 'management/about.html'
 
     def get(self, request, *args, **kwargs):
