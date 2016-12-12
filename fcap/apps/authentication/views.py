@@ -9,6 +9,8 @@ class LoginView(TemplateView):
     template_name = 'authentication/login.html'
 
     def get(self, request, *args, **kwargs):
+        if request.user.id:
+            return redirect('/')
         return self.render_to_response({})
 
     def post(self, request, *args, **kwargs):
@@ -24,6 +26,8 @@ class RegisterView(TemplateView):
     template_name = 'authentication/register.html'
 
     def get(self, request, *args, **kwargs):
+        if request.user.id:
+            return redirect('/')
         return self.render_to_response({})
 
     def post(self, request, *args, **kwargs):
