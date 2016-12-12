@@ -6,12 +6,7 @@ DATABASES = {
         'NAME': 'fcap',
         'HOST': '172.17.0.2',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'vandai123',
         'PORT': 3306,
     }
 }
-
-INSTALLED_APPS.extend([
-    'authentication',
-    'management',
-])

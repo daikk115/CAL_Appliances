@@ -4,8 +4,8 @@ Federated Cloud Application Platform
 Meta
 ----
 
-Author:
-    Dai Dang Van
+Structure:
+    Follow [project template, shared by Mischback](https://github.com/Mischback/django-project-skeleton)
 
 Status:
     in development
