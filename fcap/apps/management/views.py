@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 
 class AppView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
-    template_name = 'management/index.html'
+    template_name = 'management/app.html'
     page = "management/btn_and_popup_{}.html".format('app')
     category =  ['Name', 'Flavor', 'IP Address', 'Actions']
 
@@ -33,7 +33,7 @@ class AppView(LoginRequiredMixin, TemplateView):
 
 class NetworkView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
-    template_name = 'management/index.html'
+    template_name = 'management/network.html'
     page = "management/btn_and_popup_{}.html".format('network')
     category = ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions']
 
@@ -60,7 +60,7 @@ class NetworkView(LoginRequiredMixin, TemplateView):
 
 class ProviderView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
-    template_name = 'management/index.html'
+    template_name = 'management/provider.html'
     page = "management/btn_and_popup_{}.html".format('provider')
     category = ['Name', 'Cloud Config', 'Actions']
 

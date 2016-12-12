@@ -1,45 +1,99 @@
-<!--A Design by W3layouts
-Author: W3layout
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
-<!DOCTYPE HTML>
-<html lang="{% block html_language_code %}en{% endblock %}">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Federated Cloud Application Platform</title>
-{% load static %}
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="{% static 'management/base/css/style.css' %}" rel="stylesheet" type="text/css" media="all"/>
-<link href="{% static 'management/base/css/slider.css' %}" rel="stylesheet" type="text/css" media="all"/>
-<script type="text/javascript" src="{% static 'management/base/js/jquery-1.7.2.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'management/base/js/move-top.js' %}"></script>
-<script type="text/javascript" src="{% static 'management/base/js/easing.js' %}"></script>
-<script src="{% static 'management/base/js/easyResponsiveTabs.js' %}" type="text/javascript"></script>
-<link href="{% static 'management/base/css/easy-responsive-tabs.css' %}" rel="stylesheet" type="text/css" media="all"/>
-<link rel="stylesheet" href="{% static 'management/base/css/global.css' %}">
-
-<script src="{% static 'management/base/js/slides.min.jquery.js'%}"></script>
-<script type="text/javascript" src="{% static 'management/base/js/startstop-slider.js'%}"></script>
-
-{% block javascript %}
-{% endblock %}
-
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FCAP</title>
+    <!-- BOOTSTRAP STYLES-->
+    {% load static %}
+    <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet"/>
+    <!-- FONTAWESOME STYLES-->
+    <link href="{% static 'assets/css/font-awesome.css' %}" rel="stylesheet"/>
+    <!-- CUSTOM STYLES-->
+    <link href="{% static 'assets/css/custom.css' %}" rel="stylesheet"/>
+    <link href="{%  static 'assets/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
-  <div class="wrap">
-      <div class="header">
-          {% include 'management/header.html' %}
-          <!--{% include 'management/banner.html' %}-->
-          {% include 'management/nav-bar.html' %}
-      </div>
-      <div class="main">
-          <div class="content">
+<nav class="header black-bg">
+    <a href="/app/" class="logo">
+        <i class="fa fa-cogs fa-2x" data-placement="right"></i>
+        <b> &nbsp; &nbsp; Federated abstract cloud layer</b>
+    </a>
+    <div class="pull-right logout">
+        <ul>
+            <li>
+                <a href="#">Logout</a>
+            </li>
+            <li>
+                <a href="#">Đặng Văn Đại</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<aside>
+    <nav class="navbar-default navbar-side" role="navigation" style="position: fixed;">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="main-menu">
+                <li class="text-center">
+                    {% load static %}
+                    <img src="{% static 'assets/img/cloud_computing.png' %}" class="user-image img-responsive"/>
+                </li>
+                <li>
+                    <a class="active-menu" href="/app/">
+                        <i class="fa fa-qrcode fa-3x"></i>
+                        Apps
+                    </a>
+                </li>
+                <li>
+                    <a href="/network/">
+                        <i class="fa fa-sitemap fa-3x"></i>
+                        Networks
+                    </a>
+                </li>
+                <li>
+                    <a href="/provider/">
+                        <i class="fa fa-cloud fa-3x"></i>
+                        Providers
+                    </a>
+                </li>
+                <li>
+                    <a href="/about/">
+                        <i class="fa fa-rss fa-3x"></i>
+                        About
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</aside>
+<!-- /. NAV SIDE  -->
+<div id="page-wrapper">
+    <div id="page-inner" style="margin-top: 80px;">
+        <div class="panel panel-default">
             {% block main %}{% endblock %}
-          </div>
-     </div>
-  </div>
-{#  {% include "management/footer.html" %}#}
+        </div>
+    </div>
+</div>
+<!-- /. WRAPPER  -->
+<!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+<!-- JQUERY SCRIPTS -->
+{% load static %}
+<script src="{% static 'assets/js/jquery-1.10.2.js'  %}"></script>
+<!-- BOOTSTRAP SCRIPTS -->
+<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+<!-- METISMENU SCRIPTS -->
+<script src="{% static 'assets/js/jquery.metisMenu.js' %}"></script>
+
+<script src="{% static 'assets/js/dataTables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'assets/js/dataTables/dataTables.bootstrap.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#dataTables-example').dataTable({
+            'pageLength': 5,
+            "lengthMenu": [5, 10, 15, 20, 25]
+        });
+    });
+</script>
+
 </body>
 </html>
