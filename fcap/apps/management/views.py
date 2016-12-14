@@ -1,34 +1,25 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from management.models import Provider
+from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 
 
 class AppView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
     template_name = 'management/app.html'
-    page = "management/btn_and_popup_{}.html".format('app')
-    category =  ['Name', 'Flavor', 'IP Address', 'Actions']
 
     def get(self, request, *args, **kwargs):
-        table = {
-            'category': self.category,
-            'rows': []
-        }
+        first_name = request.user.first_name
+        last_name = request.user.last_name
+        full_name = " ".join([first_name, last_name])
+
         return self.render_to_response({
-            'table': table,
-            'page': self.page
+            'fullname': full_name,
         })
 
     def post(self, request, *args, **kwargs):
-        table = {
-            'category': self.category,
-            'rows': []
-        }
-        return self.render_to_response({
-            'table': table,
-            'page': self.page
-        })
+        return self.get(request)
 
 
 class NetworkView(LoginRequiredMixin, TemplateView):
@@ -48,53 +39,48 @@ class NetworkView(LoginRequiredMixin, TemplateView):
         })
 
     def post(self, request, *args, **kwargs):
-        table = {
-            'category': self.category,
-            'rows': []
-        }
-        return self.render_to_response({
-            'table': table,
-            'page': self.page
-        })
+        return self.get(request)
 
 
 class ProviderView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
     template_name = 'management/provider.html'
-    page = "management/btn_and_popup_{}.html".format('provider')
-    category = ['Name', 'Cloud Config', 'Actions']
 
     def _provider_to_tuple(self, providers):
-        result = []
+        items = []
         for provider in providers:
+            id = provider.id
             name = provider.name
             config = provider.config
-            result.append((name, config, 'Not yet'))
+            enable = provider.enable
+            items.append((id, name, config, enable))
 
-        return result
+        return items
 
     def get(self, request, *args, **kwargs):
         providers = Provider.objects.all()
-        table = {
-            'category': self.category,
-            'rows': self._provider_to_tuple(providers)
-        }
         return self.render_to_response({
-            'table': table,
-            'page': self.page
+            'table': self._provider_to_tuple(providers)
         })
 
     def post(self, request, *args, **kwargs):
-        name = request.POST.get('name')
-        config = request.POST.get('config')
-        user_id = request.user.id
-        if config:
-            user = Provider(
-                name=name,
-                config=config,
-                user_id=user_id
-            )
-            user.save()
+        id = request.POST.get('id')
+        check = request.POST.get('check')
+        if id:
+            provider = Provider.objects.get(id=id)
+        else:
+            provider = Provider()
+
+        if check:
+            provider.enable = 1
+        else:
+            provider.enable = 0
+
+        provider.name = request.POST.get('name')
+        provider.config = request.POST.get('config')
+        provider.user_id = request.user.id
+        provider.save()
+
         return self.get(request)
 
 class AboutView(LoginRequiredMixin, TemplateView):
@@ -102,3 +88,11 @@ class AboutView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response({})
+
+@require_POST
+def delete_provider(request):
+    id = request.POST.get('id')
+    if id:
+        Provider.objects.filter(id=id).delete()
+
+    return redirect("/provider")

@@ -4,6 +4,8 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>FCAP</title>
+    {% block style %}
+    {% endblock %}
     <!-- BOOTSTRAP STYLES-->
     {% load static %}
     <link href="{% static 'assets/css/bootstrap.css' %}" rel="stylesheet"/>
@@ -15,7 +17,7 @@
 </head>
 <body>
 <nav class="header black-bg">
-    <a href="/app/" class="logo">
+    <a href="{% url 'app' %}" class="logo">
         <i class="fa fa-cogs fa-2x" data-placement="right"></i>
         <b>&nbsp; &nbsp; Federated Cloud Application Platform</b>
     </a>
@@ -23,8 +25,8 @@
         <ul>
             <li>
                 <div style="color: white; padding: 15px 50px 5px 50px; float: right; font-size: 16px;">
-                    Đặng Văn Đại &nbsp; &vellip;
-                    <a href="/auth/logout" class="btn btn-danger square-btn-adjust" style="background: #428bcf; font-size: 16px;">
+                    {{ fullname }} &nbsp; &vellip;
+                    <a href="{% url 'logout' %}'" class="btn btn-danger square-btn-adjust" style="background: #428bcf; font-size: 16px;">
                         Logout
                     </a>
                 </div>
@@ -41,25 +43,25 @@
                     <img src="{% static 'assets/img/cloud_computing.png' %}" class="user-image img-responsive"/>
                 </li>
                 <li>
-                    <a class="active-menu" href="/app/">
+                    <a class="active-menu" href="{% url 'app' %}">
                         <i class="fa fa-qrcode fa-3x"></i>
                         Apps
                     </a>
                 </li>
                 <li>
-                    <a href="/network/">
+                    <a href="{% url 'network' %}">
                         <i class="fa fa-sitemap fa-3x"></i>
                         Networks
                     </a>
                 </li>
                 <li>
-                    <a href="/provider/">
+                    <a href="{% url 'provider' %}">
                         <i class="fa fa-cloud fa-3x"></i>
                         Providers
                     </a>
                 </li>
                 <li>
-                    <a href="/about/">
+                    <a href="{% url 'about' %}">
                         <i class="fa fa-rss fa-3x"></i>
                         About
                     </a>

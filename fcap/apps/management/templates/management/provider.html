@@ -1,4 +1,65 @@
 {% extends 'management/base.html' %}
+{% block style %}
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .switch input {
+        display: none;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
 {% block main %}
 <div class="panel-body">
     <ul class="nav nav-tabs">
@@ -27,14 +88,71 @@
                                 <form action="{{ request.build_absolute_uri }}" method="post">
                                     {% csrf_token %}
                                     <div class="modal-body">
-                                        <label for="name">
-                                            <span>Name <span class="required">*</span></span>
-                                            <input type="text" class="input-field" name="name" value=""/>
-                                        </label>
-                                        <label for="config">
-                                            <span>JSON config <span class="required">*</span></span>
-                                            <input type="text" class="textarea-field" name="config" value=""/>
-                                        </label>
+                                        <fieldset>
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input class="form-control" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Select Cloud</label>
+                                                <select class="form-control" onclick="java_script_:show(this.options[this.selectedIndex].value)">
+                                                    <option value="ops" >OpenStack</option>
+                                                    <option value="aws" >Amazon</option>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset id="ops" style="display:inherit">
+                                            <div class="form-group">
+                                                <label>PROJECT DOMAIN NAME</label>
+                                                <input class="form-control" name="os_project_domain_name" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>USER DOMAIN ID</label>
+                                                <input class="form-control" name="os_user_domain_name" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>PROJECT NAME</label>
+                                                <input class="form-control" name="os_project_name" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>USERNAME</label>
+                                                <input class="form-control" name="os_username" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>PASSWORD</label>
+                                                <input class="form-control" name="os_password" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>AUTH URL</label>
+                                                <input class="form-control" name="os_auth_url" type="text">
+                                            </div>
+                                        </fieldset>
+                                        <fieldset id="aws" style="display:none">
+                                            <div class="form-group">
+                                                <label>AWS ACCESS KEY ID</label>
+                                                <input class="form-control" name="aws_access_key_id" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>AWS SECRET ACCESS KEY</label>
+                                                <input class="form-control" name="aws_secret_access_key" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>REGION NAME</label>
+                                                <input class="form-control" name="region_name" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>ENDPOINT URL</label>
+                                                <input class="form-control" name="endpoint_url" type="text">
+                                            </div>
+                                        </fieldset>
+                                        <!--<label for="name">-->
+                                            <!--<span>Name <span class="required">*</span></span>-->
+                                            <!--<input type="text" class="input-field" name="name" value=""/>-->
+                                        <!--</label>-->
+                                        <!--<label for="config">-->
+                                            <!--<span>JSON config <span class="required">*</span></span>-->
+                                            <!--<input type="text" class="textarea-field" name="config" value=""/>-->
+                                        <!--</label>-->
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default" data-dismiss="modal">Close
@@ -57,37 +175,134 @@
                                            id="dataTables-example">
                                         <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Configuration</th>
-                                            <th>Enable</th>
-                                            <th>Actions</th>
+                                            <th style="text-align: center">Name</th>
+                                            <th style="text-align: center">Configuration</th>
+                                            <th style="text-align: center">Enable</th>
+                                            <th style="text-align: center;  width: 140px;">Actions</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr class="odd gradeX">
-                                            <td>Trident</td>
-                                            <td>Internet Explorer 4.0</td>
-                                            <td>Win 95+</td>
-                                            <td class="center">4</td>
+                                        {% for column in table %}
+                                        <tr>
+                                            <td>{{ column.1 }}</td>
+                                            <td>{{ column.2 }}</td>
+                                            <td style="text-align: center">
+                                                <label class="switch">
+                                                    <form action="{{ request.build_absolute_uri }}"
+                                                          method="post" id="enable-{{ column.0 }}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="id" value="{{ column.0 }}">
+                                                        <input type="hidden" name="name" value="{{ column.1 }}">
+                                                        <input type="hidden" name="config" value="{{ column.2 }}">
+                                                        <input type="checkbox" name="check" value="{{ column.3 }}"
+                                                               {% if column.3 != 0 %} checked {% endif %}
+                                                               onchange="document.forms['enable-{{ column.0 }}'].submit();">
+                                                        <div class="slider round"></div>
+                                                    </form>
+                                                </label>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-primary"
+                                                            data-toggle="modal"
+                                                            data-target="#edit-{{ column.0 }}">
+                                                        Edit
+                                                    </button>
+                                                    <div class="modal fade" id="edit-{{ column.0 }}" tabindex="-1"
+                                                         role="dialog"
+                                                         aria-labelledby="edit-{{ column.0 }}-Label"
+                                                         aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                            data-dismiss="modal"
+                                                                            aria-hidden="true">&times;</button>
+                                                                    <h4 class="modal-title"
+                                                                        id="edit-{{ column.0 }}-Label">Edit
+                                                                        provider</h4>
+                                                                </div>
+                                                                <form action="{{ request.build_absolute_uri }}"
+                                                                      method="post">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ column.0 }}">
+                                                                    <div class="modal-body">
+                                                                        <label for="name">
+                                                                            <span>Name<span
+                                                                                    class="required">*</span></span>
+                                                                            <input type="text" class="input-field"
+                                                                                   name="name" value="{{ column.1 }}"/>
+                                                                        </label>
+                                                                        <label for="config">
+                                                                            <span>JSON config<span
+                                                                                    class="required">*</span></span>
+                                                                            <input type="text" class="textarea-field"
+                                                                                   name="config"
+                                                                                   value="{{ column.2 }}"/>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-default"
+                                                                                data-dismiss="modal">Close
+                                                                        </button>
+                                                                        <input type="submit" class="btn btn-primary"
+                                                                               value="Save"/>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button data-toggle="dropdown"
+                                                            class="btn btn-primary dropdown-toggle"><span
+                                                            class="caret"></span></button>
+                                                    <ul class="dropdown-menu" style="text-align: left">
+                                                        <li><a href="#"
+                                                               data-toggle="modal"
+                                                               data-target="#delete-provider-{{ column.0 }}">
+                                                            Delete
+                                                        </a></li>
+                                                    </ul>
+                                                    <div class="modal fade" id="delete-provider-{{ column.0 }}"
+                                                         tabindex="-1"
+                                                         role="dialog"
+                                                         aria-labelledby="delete-provider-{{ column.0 }}-Label"
+                                                         aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close"
+                                                                            data-dismiss="modal"
+                                                                            aria-hidden="true">&times;</button>
+                                                                    <h4 class="modal-title"
+                                                                        id="delete-provider-{{ column.0 }}-Label">Delete
+                                                                        provider</h4>
+                                                                </div>
+                                                                <form action="{% url 'delete-provider' %}"
+                                                                      method="post">
+                                                                    {% csrf_token %}
+                                                                    <div class="modal-body">
+                                                                        Do you really want to delete
+                                                                        <span style="color: #428bca">{{ column.1 }}</span>
+                                                                        provider?
+                                                                    </div>
+                                                                    <input type="hidden" name="id"
+                                                                           value="{{ column.0 }}">
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-default"
+                                                                                data-dismiss="modal">Cancel
+                                                                        </button>
+                                                                        <input type="submit" class="btn btn-primary"
+                                                                               value="Yes"/>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
                                         </tr>
-                                        <tr class="odd gradeX">
-                                            <td>Trident</td>
-                                            <td>Internet Explorer 4.0</td>
-                                            <td>Win 95+</td>
-                                            <td class="center">4</td>
-                                        </tr>
-                                        <tr class="odd gradeX">
-                                            <td>Trident</td>
-                                            <td>Internet Explorer 4.0</td>
-                                            <td>Win 95+</td>
-                                            <td class="center">4</td>
-                                        </tr>
-                                        <tr class="odd gradeX">
-                                            <td>Trident</td>
-                                            <td>Internet Explorer 4.0</td>
-                                            <td>Win 95+</td>
-                                            <td class="center">4</td>
-                                        </tr>
+                                        {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -99,4 +314,13 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function show(obj) {
+        var clouds = ["ops", "aws"];
+        for(var i=0, len=clouds.length; i < len; i++){
+            document.getElementById(clouds[i]).style.display = "none";
+        }
+        document.getElementById(obj).style.display = "inherit";
+    }
+</script>
 {% endblock %}
