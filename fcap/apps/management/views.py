@@ -9,6 +9,27 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 
 
+def format_config(dd, level=0):
+    """
+    Support convert dict into html ul li tags
+    :param dictObj:
+    :param parent:
+    :param indent:
+    :return:
+
+    E.G.: _printItems(dictObj, 'root', 0)
+    """
+    text = '<ul>'
+    for k, v in dd.iteritems():
+        text += '&nbsp;' * (4 * level) + \
+                '<li>%s: &nbsp;</li> %s' % (k, format_config(v, level + 1) if isinstance(v, dict) else (
+                    json.dumps(v) if isinstance(v, list) else v))
+
+    text += '</ul>'
+
+    return text
+
+
 class AppView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
     template_name = 'management/app.html'
@@ -41,6 +62,23 @@ class NetworkView(LoginRequiredMixin, TemplateView):
             list_provider_id.append(provider.id)
 
         networks = Network.objects.filter(provider_id__in=list_provider_id)
+
+        provider_name_dict = {}
+        provider_config_dict = {}
+
+        for provider in providers:
+            provider_name_dict[provider.id] = provider.name
+
+        for provider in providers:
+            provider_config_dict[provider.id] = \
+                dict(json.loads(provider.config))
+
+        for network in networks:
+            setattr(network, 'provider_config', format_config(
+                provider_config_dict.get(network.provider_id))
+            )
+            setattr(network, 'provider_name',
+                provider_name_dict.get(network.provider_id))
 
         return self.render_to_response({
             'fullname': full_name,
@@ -103,26 +141,6 @@ class ProviderView(LoginRequiredMixin, TemplateView):
         ]
     }
 
-    def _format_config(self, dd, level=0):
-        """
-        Support convert dict into html ul li tags
-        :param dictObj:
-        :param parent:
-        :param indent:
-        :return:
-
-        E.G.: _printItems(dictObj, 'root', 0)
-        """
-        text = '<ul>'
-        for k, v in dd.iteritems():
-            text += '&nbsp;' * (4 * level) + \
-                    '<li>%s: &nbsp;</li> %s' % (k, self._format_config(v, level + 1) if isinstance(v,dict) else (
-            json.dumps(v) if isinstance(v, list) else v))
-
-        text += '</ul>'
-
-        return text
-
     def _provider_to_tuple(self, providers):
         """
         Convert provider object list to list of tupbles
@@ -135,7 +153,7 @@ class ProviderView(LoginRequiredMixin, TemplateView):
             name = provider.name
 
             config = dict(json.loads(provider.config))
-            format = self._format_config(config)
+            format = format_config(config)
             config['format'] = format
 
             enable = provider.enable

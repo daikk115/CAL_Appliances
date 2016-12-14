@@ -131,7 +131,7 @@
                                     <tr>
                                         <th style="text-align: center">Name</th>
                                         <th style="text-align: center">CIDR</th>
-                                        <th style="text-align: center">Provider ID</th>
+                                        <th style="text-align: center">Provider</th>
                                         <th style="text-align: center">Connect External</th>
                                         <th style="text-align: center">Actions</th>
                                     </tr>
@@ -142,7 +142,37 @@
                                     <tr>
                                         <td name="name">{{ network.name }}</td>
                                         <td name="cidr">{{ network.cidr }}</td>
-                                        <td name="provider-id">{{ network.provider_id }}</td>
+                                        <td name="provider-id">
+                                            <a href="#" data-toggle="modal"
+                                               data-target="#show-provider-{{ network.id }}">
+                                                {{ network.provider_name }}
+                                            </a>
+                                            <div class="modal fade" id="show-provider-{{ network.id }}"
+                                                 tabindex="-1"
+                                                 role="dialog"
+                                                 aria-labelledby="show-provider-{{ network.id }}-Label"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close"
+                                                                    data-dismiss="modal"
+                                                                    aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title"
+                                                                id="show-provider-{{ network.id }}-Label">
+                                                                {{ network.provider_name }}
+                                                            </h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            {% autoescape off %}
+                                                                {{ network.provider_config }}
+                                                            {% endautoescape %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
                                         <td name="enable" style="text-align: center">
                                             <!--ON/OFF SWITCH MODE-->
                                             <label class="switch">
