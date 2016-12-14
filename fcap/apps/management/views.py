@@ -34,12 +34,51 @@ class NetworkView(LoginRequiredMixin, TemplateView):
         first_name = request.user.first_name
         last_name = request.user.last_name
         full_name = " ".join([first_name, last_name])
+        providers = Provider.objects.filter(user_id=request.user.id)
+
+        list_provider_id = []
+        for provider in providers:
+            list_provider_id.append(provider.id)
+
+        networks = Network.objects.filter(provider_id__in=list_provider_id)
 
         return self.render_to_response({
             'fullname': full_name,
+            'networks': networks
         })
 
     def post(self, request, *args, **kwargs):
+        """
+        Action: create, edit, make network connect to external and delete network
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        id = request.POST.get('id')
+        check_enable = request.POST.get('check-enable')
+        check = request.POST.get('check')
+
+        if id:
+            # Get or enable/disable exist provider
+            network = Network.objects.get(id=id)
+            if check_enable:
+                # Enable/disable
+                if check:
+                    network.connect_external = 1
+                else:
+                    network.connect_external = 0
+                network.save()
+                return self.get(request)
+        else:
+            # Crete provider
+            network = Network()
+
+        network.name = request.POST.get('name')
+        network.cidr = request.POST.get('cidr')
+        network.provider_id = request.POST.get('provider-id')
+        network.save()
+
         return self.get(request)
 
 
@@ -143,7 +182,7 @@ class ProviderView(LoginRequiredMixin, TemplateView):
         check = request.POST.get('check')
 
         if id:
-            # Create or enable/disable exist provider
+            # Get or enable/disable exist provider
             provider = Provider.objects.get(id=id)
             if check_enable:
                 # Enable/disable
@@ -192,3 +231,12 @@ def list_provider(request):
         response += "<option value='{}'>{}</option>" .format(provider.id, provider.name)
 
     return HttpResponse(response)
+
+
+@require_POST
+def delete_network(request):
+    id = request.POST.get('id')
+    if id:
+        Network.objects.filter(id=id).delete()
+
+    return redirect("/network")

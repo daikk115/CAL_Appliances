@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^about/', views.AboutView.as_view(), name='about'),
     url(r'^delete-provider/', views.delete_provider, name='delete-provider'),
     url(r'^list-provider/', views.list_provider, name='list-provider'),
+    url(r'^delete-network/', views.delete_network, name='delete-network'),
 ]

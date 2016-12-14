@@ -22,7 +22,7 @@ Với setup trong Django model như sau:
 - Bảng dữ liệu chứ các network mà người dùng tạo trên các cloud:
 
 ```
-network(id, name, description, network_id, cidr, gateway, security_group, allocation_pools, dns_nameservers, state, provider_id)
+network(id, name, description, network_id, cidr, gateway, security_group, allocation_pools, dns_nameservers, connect_external, provider_id)
 ```
 Và setup trong Django model như sau:
 
@@ -36,7 +36,7 @@ Và setup trong Django model như sau:
     security_group = models.TextField()
     allocation_pools = models.TextField()
     dns_nameservers = models.TextField()
-    state = models.TextField()
+    connect_external = models.PositiveSmallIntegerField(default=0)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     
 ```
