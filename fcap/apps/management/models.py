@@ -30,11 +30,28 @@ class Network(models.Model):
     description = models.TextField()
     network_id = models.TextField()
     cidr = models.TextField()
-    cloud = models.TextField()
     gateway = models.TextField()
     security_group = models.TextField()
     allocation_pools = models.TextField()
     dns_nameservers = models.TextField()
+    state = models.TextField()
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
     USERNAME_FIELD = 'name'
+
+class App(models.Model):
+
+    class Meta:
+        db_table = 'app'
+        app_label = 'management'
+
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    instance_id = models.TextField()
+    cidr = models.TextField()
+    docker_image = models.TextField()
+    list_port = models.TextField()
+    ip = models.TextField()
+    start_script = models.TextField()
+    state = models.TextField()
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
