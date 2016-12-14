@@ -2,9 +2,11 @@ import json
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from management.models import Provider
+from django.contrib.auth.decorators import login_required
+from management.models import Provider, Network
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
+from django.http import HttpResponse
 
 
 class AppView(LoginRequiredMixin, TemplateView):
@@ -180,3 +182,13 @@ def delete_provider(request):
         Provider.objects.filter(id=id).delete()
 
     return redirect("/provider")
+
+
+@login_required(login_url='/auth/login/')
+def list_provider(request):
+    providers = Provider.objects.filter(user_id=request.user.id)
+    response = ""
+    for provider in providers:
+        response += "<option value='{}'>{}</option>" .format(provider.id, provider.name)
+
+    return HttpResponse(response)

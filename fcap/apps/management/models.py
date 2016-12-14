@@ -34,7 +34,7 @@ class Network(models.Model):
     security_group = models.TextField()
     allocation_pools = models.TextField()
     dns_nameservers = models.TextField()
-    state = models.TextField()
+    connect_external = models.PositiveSmallIntegerField(default=0)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
     USERNAME_FIELD = 'name'

@@ -14,7 +14,8 @@
                     <button class="btn btn-primary btn-sm"
                             data-toggle="modal"
                             data-target="#myModal"
-                            style="float: right; margin: 5px;">
+                            style="float: right; margin: 5px;"
+                            onclick="list_provider();">
                         New Network
                     </button>
                     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -29,24 +30,21 @@
                                 <form action="{{ request.build_absolute_uri }}" method="post">
                                     {% csrf_token %}
                                     <div class="modal-body">
-                                        <label for="name">
-                                            <span>Name <span class="required">*</span></span>
-                                            <input type="text" class="input-field" name="name" value=""/>
-                                        </label>
-                                        <label for="cidr">
-                                            <span>CIDR <span class="required">*</span></span>
-                                            <input type="text" class="input-field" name="cidr" value=""/>
-                                        </label>
-                                        <label for="provider">
-                                            <span>Provider <span class="required">*</span></span>
-                                            <select class="select-field" name="provider">
-                                                <option value="OPS1">OPS1</option>
-                                                <option value="OPS2">
-                                                    <OPS2></OPS2>
-                                                </option>
-                                                <option value="AWS1">AWS1</option>
-                                            </select>
-                                        </label>
+                                        <fieldset id="network" style="display:inherit">
+                                            <div class="form-group">
+                                                <label>NAME</label>
+                                                <input class="form-control" name="name" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>CIRD (Classless Inter-Domain Routing)</label>
+                                                <input class="form-control" name="cidr" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Select Cloud</label>
+                                                <select class="form-control" id="list-provider" name="provider-id">
+                                                </select>
+                                            </div>
+                                        </fieldset>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default" data-dismiss="modal">Close
@@ -148,4 +146,21 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    // AJAX for posting
+    function list_provider() {
+        $.ajax({
+            url : "{% url 'list-provider' %}",
+            type : "GET",
+
+            success : function(response) {
+//                $('#list-provider').val(''); // remove the value from the input
+//                for (i = 0; i < response.length; i++) {
+//                        $("#list-provider").append("<option value="ops">"response[i]);
+//                }
+                $('#list-provider').html(response);
+            }
+        });
+    };
+</script>
 {% endblock %}
