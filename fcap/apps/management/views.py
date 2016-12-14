@@ -27,17 +27,14 @@ class AppView(LoginRequiredMixin, TemplateView):
 class NetworkView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
     template_name = 'management/network.html'
-    page = "management/btn_and_popup_{}.html".format('network')
-    category = ['Subnet ID', 'Name', 'CIDR', 'Provider', 'Security_group', 'Actions']
 
     def get(self, request, *args, **kwargs):
-        table = {
-            'category': self.category,
-            'rows': []
-        }
+        first_name = request.user.first_name
+        last_name = request.user.last_name
+        full_name = " ".join([first_name, last_name])
+
         return self.render_to_response({
-            'table': table,
-            'page': self.page
+            'fullname': full_name,
         })
 
     def post(self, request, *args, **kwargs):
@@ -82,6 +79,7 @@ class ProviderView(LoginRequiredMixin, TemplateView):
             json.dumps(v) if isinstance(v, list) else v))
 
         text += '</ul>'
+
         return text
 
     def _provider_to_tuple(self, providers):
@@ -105,7 +103,6 @@ class ProviderView(LoginRequiredMixin, TemplateView):
 
         return items
 
-
     def _get_provider_config(self, request):
         """
         Get provider config when create or delete and push into dict
@@ -120,13 +117,16 @@ class ProviderView(LoginRequiredMixin, TemplateView):
 
         return config_dict
 
-
     def get(self, request, *args, **kwargs):
-        providers = Provider.objects.all()
+        first_name = request.user.first_name
+        last_name = request.user.last_name
+        full_name = " ".join([first_name, last_name])
+        providers = Provider.objects.filter(user_id=request.user.id)
+
         return self.render_to_response({
+            'fullname': full_name,
             'table': self._provider_to_tuple(providers)
         })
-
 
     def post(self, request, *args, **kwargs):
         """
