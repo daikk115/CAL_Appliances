@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^app/', views.AppView.as_view(), name='app'),
     url(r'^provider/', views.ProviderView.as_view(), name='provider'),
     url(r'^about/', views.AboutView.as_view(), name='about'),
+    url(r'^delete-provider/', views.delete_provider, name='delete-provider'),
 ]

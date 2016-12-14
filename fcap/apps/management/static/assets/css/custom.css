@@ -263,8 +263,8 @@ font-weight: 700;
 }
 .sidebar-collapse .nav > li > a:hover,
 .sidebar-collapse .nav > li > a:focus {
-	
-	background:#68dff0;
+	background:#fff;
+    color:#428bca;
 	outline:0;
 }
 
