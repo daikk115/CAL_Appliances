@@ -14,6 +14,7 @@ class Provider(models.Model):
     config = models.TextField()
     description = models.TextField()
     enable = models.PositiveSmallIntegerField(default=0)
+    type = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     USERNAME_FIELD = 'name'
