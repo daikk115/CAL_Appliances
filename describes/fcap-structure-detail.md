@@ -1,12 +1,12 @@
 ### Cấu trúc code của FCAP
 
-FCAP được phát triển dựa trên Django web frame work với các module cơ bản sau:
+* FCAP được phát triển dựa trên Django web frame work với các module cơ bản sau:
 
 ![fcap code structure](structure.png  "FCAP")
 
 Cấu trúc trên một phần được tạo dựa trên cấu trúc [project template](https://github.com/Mischback/django-project-skeleton) của tác giả Mischback
 
-Trong đó:
+* Trong đó:
 
 - apps: thư mục chưa các "app" của project này, như: (cập nhật sau)
 
@@ -16,7 +16,7 @@ Trong đó:
 
 - tests: thư mục chưa các module test
 
-Ngoài ra:
+* Ngoài ra:
 
 - manage.py là CLI để quản lý project này như các project được phát triển từ Django khác.
 
@@ -29,3 +29,29 @@ Ngoài ra:
 - static : thư mục chưa các file tính như ảnh, css, js...
 
 - README.md : chứa các thông tin cơ bản về cài đặt, hướng dẫn chạy thử nghiệm...
+
+* Cấu trúc của một app:
+
+management
+    ├── __init__.py
+    ├── migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_auto_20161215_0002.py
+    │   └── __init__.py
+    ├── models.py
+    ├── static
+    │   └── assets
+    │       ├── css
+    │       ├── font-awesome
+    │       ├── fonts
+    │       ├── img
+    │       └── js
+    ├── templates
+    │   └── management
+    │       ├── about.html
+    │       ├── app.html
+    │       ├── base.html
+    │       ├── network.html
+    │       └── provider.html
+    ├── urls.py
+    └── views.py

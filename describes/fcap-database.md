@@ -44,7 +44,7 @@ Và setup trong Django model như sau:
 - Bảng dữ liệu chứ các apps mà người dùng tạo trên các cloud:
 
 ```
-app(id, name, description, instance_id, docker_image, list_port, ip, start_script, state, provider_id)
+app(id, name, description, instance_id, network_id, docker_image, ports, ip, start_script, state, provider_id)
 
 ```
 
@@ -54,9 +54,9 @@ Và setup trong Django model như sau:
     name = models.CharField(max_length=100)
     description = models.TextField()
     instance_id = models.TextField()
-    cidr = models.TextField()
+    network_id = models.TextField()
     docker_image = models.TextField()
-    list_port = models.TextField()
+    ports = models.TextField()
     ip = models.TextField()
     start_script = models.TextField()
     state = models.TextField()
