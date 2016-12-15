@@ -3,7 +3,7 @@ import json
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from management.models import Provider, Network
+from management.models import Provider, Network, App
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.http import HttpResponse
@@ -38,12 +38,52 @@ class AppView(LoginRequiredMixin, TemplateView):
         first_name = request.user.first_name
         last_name = request.user.last_name
         full_name = " ".join([first_name, last_name])
+        providers = Provider.objects.filter(user_id=request.user.id)
+
+        list_provider_id = []
+        for provider in providers:
+            list_provider_id.append(provider.id)
+
+        apps = App.objects.filter(provider_id__in=list_provider_id)
+        for app in apps:
+            setattr(app, 'config', format_config(
+                {
+                    'Docker Image': app.docker_image,
+                    'Ports: ': app.ports
+                }
+            ))
 
         return self.render_to_response({
             'fullname': full_name,
+            'apps': apps
         })
 
     def post(self, request, *args, **kwargs):
+        """
+        Action: create, edit, make network connect to external and delete network
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        id = request.POST.get('id')
+        if id:
+            # Get an exist provider
+            app = App.objects.get(id=id)
+        else:
+            # Crete provider
+            app = App()
+            # Dont accept for change docker_image and network_id at this time
+            # TODO: may be, we will support change network_id in future
+            app.docker_image = request.POST.get('docker-image')
+            app.network_id = request.POST.get('network-id')
+            app.provider_id = request.POST.get('provider-id')
+
+        app.name = request.POST.get('name')
+        app.ports = request.POST.get('ports')
+        app.start_script = request.POST.get('start-script')
+        app.save()
+
         return self.get(request)
 
 
@@ -111,10 +151,11 @@ class NetworkView(LoginRequiredMixin, TemplateView):
         else:
             # Crete provider
             network = Network()
+            # Dont accept change provider_id
+            network.provider_id = request.POST.get('provider-id')
 
         network.name = request.POST.get('name')
         network.cidr = request.POST.get('cidr')
-        network.provider_id = request.POST.get('provider-id')
         network.save()
 
         return self.get(request)
@@ -258,3 +299,27 @@ def delete_network(request):
         Network.objects.filter(id=id).delete()
 
     return redirect("/network")
+
+
+@login_required(login_url='/auth/login/')
+def list_network(request):
+    provider_id = request.GET.get('provider_id')
+    networks = Network.objects.filter(provider_id=provider_id)
+    response = ""
+    for network in networks:
+        response += "<option value='{}'>{}</option>" .format(network.id, network.name)
+
+    return HttpResponse(response)
+
+
+@require_POST
+def delete_app(request):
+    id = request.POST.get('id')
+    if id:
+        App.objects.filter(id=id).delete()
+
+    return redirect("/app")
+
+@require_POST
+def migrate_app(request):
+    return HttpResponse("Say hello")
