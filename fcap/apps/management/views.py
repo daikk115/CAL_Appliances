@@ -31,6 +31,8 @@ def format_config(dd, level=0):
     return text
 
 def delete_pass(config):
+    """ This is so stupid and temporary function
+    """
     try:
         del config['os_password']
         del config['aws_secret_access_key']
