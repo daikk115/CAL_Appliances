@@ -7,6 +7,7 @@ from management.models import Provider, Network, App
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from calplus import provider as calplus_provider, client
 
 
 def format_config(dd, level=0):
@@ -28,6 +29,13 @@ def format_config(dd, level=0):
     text += '</ul>'
 
     return text
+
+def delete_pass(config):
+    try:
+        del config['os_password']
+        del config['aws_secret_access_key']
+    except Exception as e:
+        pass
 
 
 class AppView(LoginRequiredMixin, TemplateView):
@@ -114,8 +122,11 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                 dict(json.loads(provider.config))
 
         for network in networks:
+            config = provider_config_dict.get(network.provider_id)
+            delete_pass(config)
             setattr(network, 'provider_config', format_config(
-                provider_config_dict.get(network.provider_id))
+                    config
+                )
             )
             setattr(network, 'provider_name',
                 provider_name_dict.get(network.provider_id))
@@ -148,16 +159,28 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                     network.connect_external = 0
                 network.save()
                 return self.get(request)
+            network.name = request.POST.get('name')
+            network.cidr = request.POST.get('cidr')
         else:
             # Crete provider
             network = Network()
             # Dont accept change provider_id
             network.provider_id = request.POST.get('provider-id')
+            network.name = request.POST.get('name')
+            network.cidr = request.POST.get('cidr')
+            provider = Provider.objects.get(id=network.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            try:
+                network_client = client.Client(version='1.0.0',
+                                        resource='network',
+                                        provider=p
+                                    )
+                network_client.create(network.name, network.cidr)
+            except Exception as e:
+                raise e
 
-        network.name = request.POST.get('name')
-        network.cidr = request.POST.get('cidr')
         network.save()
-
         return self.get(request)
 
 
@@ -166,17 +189,17 @@ class ProviderView(LoginRequiredMixin, TemplateView):
     template_name = 'management/provider.html'
     cloud_config = {
         # this keyword must to match with type in model
-        'ops': [
+        'openstack': [
             'os_project_domain_name',
             'os_user_domain_name',
             'os_project_name',
             'os_username',
-            # 'os_password',
+            'os_password',
             'os_auth_url'
         ],
-        'aws': [
+        'amazon': [
             'aws_access_key_id',
-            # 'aws_secret_access_key',
+            'aws_secret_access_key',
             'region_name',
             'endpoint_url'
         ]
@@ -194,6 +217,7 @@ class ProviderView(LoginRequiredMixin, TemplateView):
             name = provider.name
 
             config = dict(json.loads(provider.config))
+            delete_pass(config)
             format = format_config(config)
             config['format'] = format
 

@@ -37,14 +37,14 @@
                                                 <label>Select Cloud</label>
                                                 <select class="form-control"
                                                         onclick="java_script_:show(this.options[this.selectedIndex].value)">
-                                                    <option value="ops">OpenStack</option>
-                                                    <option value="aws">Amazon</option>
+                                                    <option value="openstack">OpenStack</option>
+                                                    <option value="amazon">Amazon</option>
                                                 </select>
                                             </div>
                                         </fieldset>
                                         <!--To help detect watch cloud they already pushed-->
-                                        <input type="hidden" id="cloud" value="ops" name="cloud">
-                                        <fieldset id="ops" style="display:inherit">
+                                        <input type="hidden" id="cloud" value="openstack" name="cloud">
+                                        <fieldset id="openstack" style="display:inherit">
                                             <div class="form-group">
                                                 <label>PROJECT DOMAIN NAME</label>
                                                 <input class="form-control" name="os_project_domain_name" type="text">
@@ -70,7 +70,7 @@
                                                 <input class="form-control" name="os_auth_url" type="text">
                                             </div>
                                         </fieldset>
-                                        <fieldset id="aws" style="display:none">
+                                        <fieldset id="amazon" style="display:none">
                                             <div class="form-group">
                                                 <label>AWS ACCESS KEY ID</label>
                                                 <input class="form-control" name="aws_access_key_id" type="text">
@@ -179,7 +179,7 @@
                                                                                    value="{{ column.1}}"
                                                                                    name="name" style="width: 100%;">
                                                                         </div>
-                                                                        {% if column.4 == 'ops' %}
+                                                                        {% if column.4 == 'openstack' %}
                                                                         <div class="form-group" style="width: 100%;">
                                                                             <label style="float: left">PROJECT DOMAIN NAME</label>
                                                                             <input class="form-control"
@@ -216,7 +216,7 @@
                                                                                    type="text" style="width: 100%;">
                                                                         </div>
                                                                         {% endif %}
-                                                                        {% if column.4 == 'aws' %}
+                                                                        {% if column.4 == 'amazon' %}
                                                                         <div class="form-group" style="width: 100%;">
                                                                             <label style="float: left">AWS ACCESS KEY ID</label>
                                                                             <input class="form-control"
@@ -319,7 +319,7 @@
 </div>
 <script type="text/javascript">
     function show(obj) {
-        var clouds = ["ops", "aws"];
+        var clouds = ["openstack", "amazon"];
         for (var i = 0, len = clouds.length; i < len; i++) {
             document.getElementById(clouds[i]).style.display = "none";
         }
