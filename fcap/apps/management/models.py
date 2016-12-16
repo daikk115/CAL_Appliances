@@ -49,6 +49,7 @@ class App(models.Model):
     description = models.TextField()
     instance_id = models.TextField()
     network_id = models.TextField()
+    configuration = models.TextField()
     docker_image = models.TextField()
     ports = models.TextField()
     ip = models.TextField()

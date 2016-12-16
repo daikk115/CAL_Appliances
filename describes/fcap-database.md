@@ -44,7 +44,7 @@ Và setup trong Django model như sau:
 - Bảng dữ liệu chứ các apps mà người dùng tạo trên các cloud:
 
 ```
-app(id, name, description, instance_id, network_id, docker_image, ports, ip, start_script, state, provider_id)
+app(id, name, description, instance_id, network_id, configuration, docker_image, ports, ip, start_script, state, provider_id)
 
 ```
 
@@ -55,6 +55,7 @@ Và setup trong Django model như sau:
     description = models.TextField()
     instance_id = models.TextField()
     network_id = models.TextField()
+    configuration = models.TextField()
     docker_image = models.TextField()
     ports = models.TextField()
     ip = models.TextField()
@@ -62,4 +63,14 @@ Và setup trong Django model như sau:
     state = models.TextField()
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     
+```
+
+Trong đó:
+
+```
+* instance_id: id của virtual machine chứa app
+* network_id: id của network trên cloud mà vNIC của máy ảo trên cắm vào
+* configuration: một format chứa thông tin cấu hình, lưu luôn dạng hiển thị. Nếu cấu hình thay đổi, ghì đè toàn bộ.
+* docker_image: thông tin image docker để run app
+* ports: danh sách các ports cần mở trên vm khi mà các ports trên container sẽ được map tương ứng ra port trên máy ảo
 ```
