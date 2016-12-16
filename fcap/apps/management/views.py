@@ -49,7 +49,8 @@ class AppView(LoginRequiredMixin, TemplateView):
             setattr(app, 'config', format_config(
                 {
                     'Docker Image': app.docker_image,
-                    'Ports: ': app.ports
+                    'Ports ': app.ports,
+                    'Configuration': app.configuration
                 }
             ))
 
