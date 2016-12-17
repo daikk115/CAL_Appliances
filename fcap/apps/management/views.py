@@ -162,7 +162,6 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                 network.save()
                 return self.get(request)
             network.name = request.POST.get('name')
-            network.cidr = request.POST.get('cidr')
         else:
             # Crete provider
             network = Network()
