@@ -15,7 +15,7 @@ class Provider(models.Model):
     description = models.TextField()
     enable = models.PositiveSmallIntegerField(default=0)
     type = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     USERNAME_FIELD = 'name'
 
@@ -35,7 +35,7 @@ class Network(models.Model):
     allocation_pools = models.TextField()
     dns_nameservers = models.TextField()
     connect_external = models.PositiveSmallIntegerField(default=0)
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    provider = models.ForeignKey(Provider, on_delete=models.PROTECT)
 
     USERNAME_FIELD = 'name'
 
@@ -55,4 +55,4 @@ class App(models.Model):
     ip = models.TextField()
     start_script = models.TextField()
     state = models.TextField()
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    provider = models.ForeignKey(Provider, on_delete=models.PROTECT)
