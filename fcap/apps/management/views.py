@@ -1,3 +1,4 @@
+import crypt
 import json
 
 from django.views.generic import TemplateView
@@ -29,6 +30,14 @@ def format_config(dd, level=0):
     text += '</ul>'
 
     return text
+
+def format_userdata(image, script):
+    userdata="""#!/bin/bash
+    docker pull {}
+    docker run -d {} {}'
+    """.format(image, image, script)
+    return userdata
+
 
 def delete_pass(config):
     """ This is so stupid and temporary function
@@ -80,18 +89,43 @@ class AppView(LoginRequiredMixin, TemplateView):
         if id:
             # Get an exist provider
             app = App.objects.get(id=id)
+            app.name = request.POST.get('name')
+            app.ports = request.POST.get('ports')
+            app.start_script = request.POST.get('start-script')
         else:
             # Crete provider
             app = App()
+
+            # DATABASE
+            app.name = request.POST.get('name')
+            app.ports = request.POST.get('ports')
+            app.start_script = request.POST.get('start-script')
             # Dont accept for change docker_image and network_id at this time
             # TODO: may be, we will support change network_id in future
             app.docker_image = request.POST.get('docker-image')
             app.network_id = request.POST.get('network-id')
             app.provider_id = request.POST.get('provider-id')
 
-        app.name = request.POST.get('name')
-        app.ports = request.POST.get('ports')
-        app.start_script = request.POST.get('start-script')
+            # ON CLOUD
+            provider = Provider.objects.get(id=app.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            compute_client = client.Client(version='1.0.0',
+                            resource='compute',
+                            provider=p
+                            )
+            network_client = client.Client(version='1.0.0',
+                            resource='network',
+                            provider=p
+                            )
+            real_network_id_ops = network_client.show(app.network_id).get('network_id')
+            compute_client.create(
+                '2f6026a3-4a40-4a6d-a6c8-28860fc63555', #image Ubuntu Docker
+                '2', # Flavor
+                real_network_id_ops, # 
+                None, 1,  # need two by lossing add default in base class
+                userdata=format_userdata(app.docker_image, app.start_script))
+
         app.save()
 
         return self.get(request)
@@ -151,16 +185,8 @@ class NetworkView(LoginRequiredMixin, TemplateView):
         check = request.POST.get('check')
 
         if id:
-            # Get or enable/disable exist provider
+            # Get exist network
             network = Network.objects.get(id=id)
-            if check_enable:
-                # Enable/disable
-                if check:
-                    network.connect_external = 1
-                else:
-                    network.connect_external = 0
-                network.save()
-                return self.get(request)
             network.name = request.POST.get('name')
         else:
             # Crete provider
@@ -177,7 +203,9 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                                         resource='network',
                                         provider=p
                                     )
-                network_client.create(network.name, network.cidr)
+                net = network_client.create(network.name, network.cidr)
+                network_client.connect_external_net(net.get('id'))
+                network.network_id = net.get('id')
             except Exception as e:
                 raise e
 
@@ -279,6 +307,8 @@ class ProviderView(LoginRequiredMixin, TemplateView):
         else:
             # Crete provider
             provider = Provider()
+            # secret = request.POST.get('secret')
+            # provider.secret = crypt.crypt(secret.encode('utf-8'), '$11$' + 'salt1234')
 
         provider.name = request.POST.get('name')
         provider.config = json.dumps(
@@ -309,7 +339,7 @@ def delete_provider(request):
 
 @login_required(login_url='/auth/login/')
 def list_provider(request):
-    providers = Provider.objects.filter(user_id=request.user.id)
+    providers = Provider.objects.filter(user_id=request.user.id, enable=1)
     response = ""
     for provider in providers:
         response += "<option value='{}'>{}</option>" .format(provider.id, provider.name)
@@ -332,7 +362,7 @@ def list_network(request):
     networks = Network.objects.filter(provider_id=provider_id)
     response = ""
     for network in networks:
-        response += "<option value='{}'>{}</option>" .format(network.id, network.name)
+        response += "<option value='{}'>{}</option>" .format(network.network_id, network.name)
 
     return HttpResponse(response)
 
@@ -348,3 +378,18 @@ def delete_app(request):
 @require_POST
 def migrate_app(request):
     return HttpResponse("Say hello")
+
+# @require_POST
+# def change_secret(request):
+#     id = request.POST.get('id')
+#     old_secret = request.GET.get('old_secret')
+#     new_secret = request.GET.get('new_secret')
+#     if id:
+#         provider = Provider.objects.get(id=id)
+#         if crypt.crypt(old_secret.encode('utf-8'), '$11$' + 'salt1234') == provider.secret:
+#             provider.secret = crypt.crypt(new_secret.encode('utf-8'), '$11$' + 'salt1234')
+#         else:
+#             # TODO: redirect + notif
+#             pass
+
+#     return redirect("/provider")

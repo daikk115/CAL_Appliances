@@ -12,7 +12,8 @@ class Provider(models.Model):
 
     name = models.CharField(max_length=50)
     config = models.TextField()
-    description = models.TextField()
+    # secret = models.TextField()
+    description = models.TextField()    
     enable = models.PositiveSmallIntegerField(default=0)
     type = models.TextField()
     user = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -34,7 +35,6 @@ class Network(models.Model):
     security_group = models.TextField()
     allocation_pools = models.TextField()
     dns_nameservers = models.TextField()
-    connect_external = models.PositiveSmallIntegerField(default=0)
     provider = models.ForeignKey(Provider, on_delete=models.PROTECT)
 
     USERNAME_FIELD = 'name'

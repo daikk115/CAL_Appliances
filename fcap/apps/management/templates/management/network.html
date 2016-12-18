@@ -71,7 +71,6 @@
                                         <th style="text-align: center">Name</th>
                                         <th style="text-align: center">CIDR</th>
                                         <th style="text-align: center">Provider</th>
-                                        <th style="text-align: center">Connect External</th>
                                         <th style="text-align: center">Actions</th>
                                     </tr>
                                     </thead>
@@ -110,22 +109,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-                                        </td>
-                                        <td name="enable" style="text-align: center">
-                                            <!--ON/OFF SWITCH MODE-->
-                                            <label class="switch">
-                                                <form action="{{ request.build_absolute_uri }}"
-                                                      method="post" id="enable-{{ network.id }}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="id" value="{{ network.id }}">
-                                                    <input type="hidden" name="check-enable" value="1">
-                                                    <input type="checkbox" name="check"
-                                                           {% if network.connect_external != 0 %} checked {% endif %}
-                                                           onchange="document.forms['enable-{{ network.id }}'].submit();">
-                                                    <div class="slider round"></div>
-                                                </form>
-                                            </label>
                                         </td>
                                         <td style="text-align: center">
                                             <div class="btn-group">
