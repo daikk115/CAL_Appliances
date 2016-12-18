@@ -30,6 +30,7 @@ class Network(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     network_id = models.TextField()
+    internet_id = models.TextField()
     cidr = models.TextField()
     gateway = models.TextField()
     security_group = models.TextField()

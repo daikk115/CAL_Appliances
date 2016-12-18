@@ -34,7 +34,7 @@ def format_config(dd, level=0):
 def format_userdata(image, script):
     userdata="""#!/bin/bash
     docker pull {}
-    docker run -d {} {}'
+    docker run -d -v /tmp:/tmp {} {}'
     """.format(image, image, script)
     return userdata
 
@@ -204,8 +204,9 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                                         provider=p
                                     )
                 net = network_client.create(network.name, network.cidr)
-                network_client.connect_external_net(net.get('id'))
+                gateway = network_client.connect_external_net(net.get('id'))
                 network.network_id = net.get('id')
+                network.internet_id = gateway
             except Exception as e:
                 raise e
 
@@ -351,7 +352,23 @@ def list_provider(request):
 def delete_network(request):
     id = request.POST.get('id')
     if id:
-        Network.objects.filter(id=id).delete()
+        network = Network.objects.get(id=id)
+        try:
+            provider = Provider.objects.get(id=network.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            network_client = client.Client(version='1.0.0',
+                                        resource='network',
+                                        provider=p
+                                    )
+            a = network.internet_id
+            b = network.network_id
+            network_client.disconnect_external_net(a, b)
+            network_id = network_client.show(network.network_id).get('network_id')
+            network_client.delete(network_id)
+            network.delete()
+        except Exception as e:
+            raise e
 
     return redirect("/network")
 
