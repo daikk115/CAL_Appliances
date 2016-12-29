@@ -31,11 +31,21 @@ def format_config(dd, level=0):
 
     return text
 
-def format_userdata(image, script):
+
+def format_userdata_start(name, image, script):
     userdata="""#!/bin/bash
-    docker pull {}
-    docker run -d -v /tmp:/tmp {} {}'
-    """.format(image, image, script)
+./home/ubuntu/docker-1.10.0-dev -H tcp://127.0.0.1:2375 run -d -v /tmp:/tmp --name {} --security-opt seccomp:unconfined {} {}
+""".format(name, image, script)
+    return userdata
+
+
+def format_userdata_migrate(name, image, script, ip):
+    userdata="""#!/bin/bash
+./home/ubuntu/docker-1.10.0-dev -H tcp://{}:2375 checkpoint --image-dir=/tmp/checkpoint1 {}
+./home/ubuntu/docker-1.10.0-dev -H tcp://{}:2375 cp {}:/tmp/checkpoint1 /home/ubuntu/test_checkpoint
+./home/ubuntu/docker-1.10.0-dev -H tcp://127.0.0.1:2375 create -v /tmp:/tmp --name {} --security-opt seccomp:unconfined {} {}
+./home/ubuntu/docker-1.10.0-dev -H tcp://127.0.0.1:2375 restore --force=true --image-dir=/home/ubuntu/test_checkpoint {}
+""".format(ip, name, ip, name, name, image, script, name)
     return userdata
 
 
@@ -52,6 +62,10 @@ def delete_pass(config):
 class AppView(LoginRequiredMixin, TemplateView):
     login_url = '/auth/login/'
     template_name = 'management/app.html'
+    image_ids = {
+        'openstack': '82eaaf2a-a417-4273-ae80-f44119013613',
+        'amazon': 'ami-4163d076'
+    }
 
     def get(self, request, *args, **kwargs):
         first_name = request.user.first_name
@@ -119,12 +133,17 @@ class AppView(LoginRequiredMixin, TemplateView):
                             provider=p
                             )
             real_network_id_ops = network_client.show(app.network_id).get('network_id')
-            compute_client.create(
-                '2f6026a3-4a40-4a6d-a6c8-28860fc63555', #image Ubuntu Docker
+
+            if provider.type == 'openstack':
+                image_id = 'ami-4163d076'
+            elif provider.type == 'amazon':
+                image_id = 'ami-4163d076'
+            app.instance_id = compute_client.create(
+                image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
                 '2', # Flavor
                 real_network_id_ops, # 
                 None, 1,  # need two by lossing add default in base class
-                userdata=format_userdata(app.docker_image, app.start_script))
+                userdata=format_userdata_start(app.name, app.docker_image, app.start_script))
 
         app.save()
 
@@ -388,7 +407,20 @@ def list_network(request):
 def delete_app(request):
     id = request.POST.get('id')
     if id:
-        App.objects.filter(id=id).delete()
+        app = App.objects.get(id=id)
+        try:
+            provider = Provider.objects.get(id=app.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            compute_client = client.Client(version='1.0.0',
+                            resource='compute',
+                            provider=p
+                            )
+            compute_client.delete(app.instance_id)
+        except:
+            pass
+        finally:
+            app.delete()
 
     return redirect("/app")
 
