@@ -1,1 +1,2 @@
 Django==1.10.2
+MySQL-python # requires in real env: zlip1g-dev libmysqlclient-dev python-dev
