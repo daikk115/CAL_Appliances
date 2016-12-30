@@ -165,6 +165,7 @@
             }
         });
     };
+    
     function list_network() {
         $.ajax({
             url: "{% url 'list-network' %}",
@@ -173,6 +174,29 @@
 
             success: function (response) {
                 $('#list-network').html(response);
+            }
+        });
+    };
+    // AJAX for posting
+    function list_provider_to_migrate() {
+        $.ajax({
+            url: "{% url 'list-provider' %}",
+            type: "GET",
+
+            success: function (response) {
+                $('#list-provider-to-migrate').html(response);
+                list_network_to_migrate();
+            }
+        });
+    };
+    function list_network_to_migrate() {
+        $.ajax({
+            url: "{% url 'list-network' %}",
+            type: "GET",
+            data: {provider_id: $('#list-provider-to-migrate').val()},
+
+            success: function (response) {
+                $('#list-network-to-migrate').html(response);
             }
         });
     };

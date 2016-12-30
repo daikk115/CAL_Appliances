@@ -196,7 +196,18 @@
                                                     <!-- DELETE -->
                                                     <li><a href="#"
                                                            data-toggle="modal"
-                                                           data-target="#migrate-app-{{ app.id }}">
+                                                           data-target="#add-public-ip-{{ app.id }}">
+                                                        Add Public IP
+                                                    </a></li>
+                                                    <li><a href="#"
+                                                           data-toggle="modal"
+                                                           data-target="#delete-public-ip-{{ app.id }}">
+                                                        Release Public IP
+                                                    </a></li>
+                                                    <li><a href="#"
+                                                           data-toggle="modal"
+                                                           data-target="#migrate-app-{{ app.id }}"
+                                                           onclick="list_provider_to_migrate();">
                                                         Migrate
                                                     </a></li>
                                                     <li><a href="#"
@@ -241,6 +252,76 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="modal fade" id="add-public-ip-{{ app.id }}"
+                                                     tabindex="-1"
+                                                     role="dialog"
+                                                     aria-labelledby="add-public-ip-{{ app.id }}-Label"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close"
+                                                                        data-dismiss="modal"
+                                                                        aria-hidden="true">&times;</button>
+                                                                <h4 class="modal-title"
+                                                                    id="add-public-ip-{{ app.id }}-Label">Add Public IP</h4>
+                                                            </div>
+                                                            <form action="{% url 'add-public-ip' %}"
+                                                                  method="post">
+                                                                {% csrf_token %}
+                                                                <div class="modal-body">
+                                                                    Do you really want to add Public IP for 
+                                                                    <span style="color: #428bca">{{ app.name }}</span>
+                                                                    app?
+                                                                </div>
+                                                                <input type="hidden" name="id"
+                                                                       value="{{ app.id }}">
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-default"
+                                                                            data-dismiss="modal">Cancel
+                                                                    </button>
+                                                                    <input type="submit" class="btn btn-primary"
+                                                                           value="Yes"/>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal fade" id="delete-public-ip-{{ app.id }}"
+                                                     tabindex="-1"
+                                                     role="dialog"
+                                                     aria-labelledby="delete-public-ip-{{ app.id }}-Label"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close"
+                                                                        data-dismiss="modal"
+                                                                        aria-hidden="true">&times;</button>
+                                                                <h4 class="modal-title"
+                                                                    id="delete-public-ip-{{ app.id }}-Label">Release Public IP</h4>
+                                                            </div>
+                                                            <form action="{% url 'delete-public-ip' %}"
+                                                                  method="post">
+                                                                {% csrf_token %}
+                                                                <div class="modal-body">
+                                                                    Do you really want to release Public IP on
+                                                                    <span style="color: #428bca">{{ app.name }}</span>
+                                                                    app?
+                                                                </div>
+                                                                <input type="hidden" name="id"
+                                                                       value="{{ app.id }}">
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-default"
+                                                                            data-dismiss="modal">Cancel
+                                                                    </button>
+                                                                    <input type="submit" class="btn btn-primary"
+                                                                           value="Yes"/>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="modal fade" id="migrate-app-{{ app.id }}"
                                                      tabindex="-1"
                                                      role="dialog"
@@ -260,9 +341,21 @@
                                                                   method="post">
                                                                 {% csrf_token %}
                                                                 <div class="modal-body">
-                                                                    Do you really want to migrate
-                                                                    <span style="color: #428bca">{{ app.name }}</span>
-                                                                    app?
+                                                                    <fieldset id="network" style="display:inherit">
+                                                                        <div class="form-group" style="width: 100%;">
+                                                                            <label style="float: left">Select Cloud</label>
+                                                                            <select class="form-control" id="list-provider-to-migrate"
+                                                                                name="provider-id"
+                                                                                onclick="list_network_to_migrate();" style="width: 100%;">
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="form-group" style="width: 100%;">
+                                                                            <label style="float: left">Select Network</label>
+                                                                            <select class="form-control" id="list-network-to-migrate"
+                                                                                    name="network-id" style="width: 100%;">
+                                                                            </select>
+                                                                        </div>
+                                                                    </fieldset>
                                                                 </div>
                                                                 <input type="hidden" name="id"
                                                                        value="{{ app.id }}">

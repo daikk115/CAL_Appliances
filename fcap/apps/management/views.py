@@ -1,5 +1,7 @@
 import crypt
 import json
+from time import sleep
+import imp
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +10,9 @@ from management.models import Provider, Network, App
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from calplus import provider as calplus_provider, client
+
+from calplus import provider as calplus_provider
+from calplus.client import Client
 
 
 def format_config(dd, level=0):
@@ -64,7 +68,11 @@ class AppView(LoginRequiredMixin, TemplateView):
     template_name = 'management/app.html'
     image_ids = {
         'openstack': '82eaaf2a-a417-4273-ae80-f44119013613',
-        'amazon': 'ami-4163d076'
+        'amazon': 'ami-27e2ffd1'
+    }
+    userdata = {
+        'openstack': 'userdata',
+        'amazon': 'UserData'
     }
 
     def get(self, request, *args, **kwargs):
@@ -124,26 +132,29 @@ class AppView(LoginRequiredMixin, TemplateView):
             provider = Provider.objects.get(id=app.provider_id)
             p = calplus_provider.Provider(provider.type,
                 dict(json.loads(provider.config)))
-            compute_client = client.Client(version='1.0.0',
+            compute_client = Client(version='1.0.0',
                             resource='compute',
                             provider=p
                             )
-            network_client = client.Client(version='1.0.0',
+            network_client = Client(version='1.0.0',
                             resource='network',
                             provider=p
                             )
             real_network_id_ops = network_client.show(app.network_id).get('network_id')
 
-            if provider.type == 'openstack':
-                image_id = 'ami-4163d076'
-            elif provider.type == 'amazon':
-                image_id = 'ami-4163d076'
+            kwargs = {
+                "{}".format(self.userdata.get(provider.type)): format_userdata_start(
+                    app.name, app.docker_image, app.start_script)
+            }
             app.instance_id = compute_client.create(
-                image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
+                self.image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
                 '2', # Flavor
                 real_network_id_ops, # 
                 None, 1,  # need two by lossing add default in base class
-                userdata=format_userdata_start(app.name, app.docker_image, app.start_script))
+                **kwargs
+            )
+            sleep(5)
+            app.ip = json.dumps(compute_client.list_ip(app.instance_id))
 
         app.save()
 
@@ -217,8 +228,10 @@ class NetworkView(LoginRequiredMixin, TemplateView):
             provider = Provider.objects.get(id=network.provider_id)
             p = calplus_provider.Provider(provider.type,
                 dict(json.loads(provider.config)))
+            print p.config
+            print p.type
             try:
-                network_client = client.Client(version='1.0.0',
+                network_client = Client(version='1.0.0',
                                         resource='network',
                                         provider=p
                                     )
@@ -226,11 +239,12 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                 gateway = network_client.connect_external_net(net.get('id'))
                 network.network_id = net.get('id')
                 network.internet_id = gateway
+                del network_client
             except Exception as e:
                 raise e
 
         network.save()
-        return self.get(request)
+        return redirect("/network")
 
 
 class ProviderView(LoginRequiredMixin, TemplateView):
@@ -376,18 +390,20 @@ def delete_network(request):
             provider = Provider.objects.get(id=network.provider_id)
             p = calplus_provider.Provider(provider.type,
                 dict(json.loads(provider.config)))
-            network_client = client.Client(version='1.0.0',
+            network_client = Client(version='1.0.0',
                                         resource='network',
                                         provider=p
                                     )
-            a = network.internet_id
-            b = network.network_id
-            network_client.disconnect_external_net(a, b)
-            network_id = network_client.show(network.network_id).get('network_id')
+            internet_id = network.internet_id
+            network_id = network.network_id
+            network_client.disconnect_external_net(internet_id, network_id)
             network_client.delete(network_id)
             network.delete()
+            del network_client
         except Exception as e:
             raise e
+        finally:
+            pass
 
     return redirect("/network")
 
@@ -412,21 +428,86 @@ def delete_app(request):
             provider = Provider.objects.get(id=app.provider_id)
             p = calplus_provider.Provider(provider.type,
                 dict(json.loads(provider.config)))
-            compute_client = client.Client(version='1.0.0',
+            compute_client = Client(version='1.0.0',
                             resource='compute',
                             provider=p
                             )
             compute_client.delete(app.instance_id)
-        except:
-            pass
-        finally:
             app.delete()
+        except Exception as e:
+            raise e
+        finally:
+            pass
 
     return redirect("/app")
 
 @require_POST
 def migrate_app(request):
     return HttpResponse("Say hello")
+
+@require_POST
+def add_public_ip(request):
+    id = request.POST.get('id')
+    if id:
+        try:
+            app = App.objects.get(id=id)
+            # ON CLOUD
+            provider = Provider.objects.get(id=app.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            compute_client = Client(version='1.0.0',
+                            resource='compute',
+                            provider=p)
+            network_client = Client(version='1.0.0',
+                            resource='network',
+                            provider=p)
+            
+            public_ip = network_client.allocate_public_ip()
+            addr_id = public_ip.get('id')
+            addr = public_ip.get('public_ip')
+
+            ips = dict(json.loads(app.ip))
+            ips['PublicIpIds'] = [addr_id]
+            ips['PublicIps'] = [addr]
+            app.ip = json.dumps(ips)
+
+            compute_client.associate_public_ip(app.instance_id, addr_id)
+            app.save()
+        except:
+            pass
+
+    return redirect("/app")
+
+@require_POST
+def delete_public_ip(request):
+    id = request.POST.get('id')
+    if id:
+        try:
+            app = App.objects.get(id=id)
+            # ON CLOUD
+            provider = Provider.objects.get(id=app.provider_id)
+            p = calplus_provider.Provider(provider.type,
+                dict(json.loads(provider.config)))
+            compute_client = Client(version='1.0.0',
+                            resource='compute',
+                            provider=p)
+            network_client = Client(version='1.0.0',
+                            resource='network',
+                            provider=p)
+            
+            ips = dict(json.loads(app.ip))
+            addr_id = ips['PublicIpIds'][0]
+            del ips['PublicIpIds'][0]
+            del ips['PublicIps'][0]
+            app.ip = json.dumps(ips)
+
+            compute_client.disassociate_public_ip(addr_id)
+            network_client.release_public_ip(addr_id)
+            app.save()
+        except:
+            pass
+
+    return redirect("/app")
 
 # @require_POST
 # def change_secret(request):

@@ -13,5 +13,8 @@ urlpatterns = [
     url(r'^delete-network/', views.delete_network, name='delete-network'),
     url(r'^list-network/', views.list_network, name='list-network'),
     url(r'^delete-app/', views.delete_app, name='delete-app'),
+    url(r'^add-public-ip/', views.add_public_ip, name='add-public-ip'),
+    url(r'^delete-public-ip/', views.delete_public_ip, name='delete-public-ip'),
     url(r'^migrate-app/', views.migrate_app, name='migrate-app'),
+    # url(r'^change-secret/', views.change_secret, name='change-secret'),
 ]
