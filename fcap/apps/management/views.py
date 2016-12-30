@@ -165,7 +165,7 @@ class AppView(LoginRequiredMixin, TemplateView):
                 None, 1,  # need two by lossing add default in base class
                 **kwargs
             )
-            sleep(5)
+            sleep(10)
             app.ip = json.dumps(compute_client.list_ip(app.instance_id))
 
         app.save()
@@ -469,7 +469,7 @@ def migrate_app(request):
         app.start_script = old_app.start_script
         app.docker_image = old_app.docker_image
         app.network_id = old_app.network_id
-        app.provider_id = old_app.provider_id
+        app.provider_id = request.POST.get('provider-id')
 
         # MIGRATE APP ON CLOUD
         provider = Provider.objects.get(id=app.provider_id)
