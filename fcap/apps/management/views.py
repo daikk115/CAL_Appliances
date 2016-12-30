@@ -149,7 +149,7 @@ class AppView(LoginRequiredMixin, TemplateView):
                             provider=p
                             )
             if provider.type == 'openstack':
-                real_network_id = network_client.show(app.network_id).get('network_id')z
+                real_network_id = network_client.show(app.network_id).get('network_id')
             else:
                 real_network_id = app.network_id
 
