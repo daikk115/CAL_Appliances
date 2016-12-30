@@ -26,6 +26,10 @@ userdata_parameter = {
     'amazon': 'UserData'
 }
 
+configurations = {
+    'openstack': '2',
+    'amazon': 'm1.small'
+}
 
 def format_config(dd, level=0):
     """
@@ -152,7 +156,7 @@ class AppView(LoginRequiredMixin, TemplateView):
             }
             app.instance_id = compute_client.create(
                 image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
-                '2', # Flavor
+                configurations.get(provider.type), # Flavor
                 real_network_id_ops, # 
                 None, 1,  # need two by lossing add default in base class
                 **kwargs
