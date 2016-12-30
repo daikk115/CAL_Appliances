@@ -555,7 +555,7 @@ def delete_public_ip(request):
             network_client.release_public_ip(addr_id)
             app.save()
         except:
-            pass
+            raise
 
     return redirect("/app")
 
