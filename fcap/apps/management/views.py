@@ -21,7 +21,7 @@ image_ids = {
         'amazon': 'ami-27e2ffd1'
     }
 
-userdata = {
+userdata_parameter = {
     'openstack': 'userdata',
     'amazon': 'UserData'
 }
@@ -147,7 +147,7 @@ class AppView(LoginRequiredMixin, TemplateView):
             real_network_id_ops = network_client.show(app.network_id).get('network_id')
 
             kwargs = {
-                "{}".format(userdata.get(provider.type)): format_userdata_start(
+                "{}".format(userdata_parameter.get(provider.type)): format_userdata_start(
                     app.name, app.docker_image, app.start_script)
             }
             app.instance_id = compute_client.create(
@@ -479,7 +479,7 @@ def migrate_app(request):
         public_ip =  json.loads(old_app.ip).get('PublicIps')[0]
 
         kwargs = {
-            "{}".format(userdata.get(provider.type)): format_userdata_migrate(
+            "{}".format(userdata_parameter.get(provider.type)): format_userdata_migrate(
                 app.name, app.docker_image, app.start_script, public_ip)
         }
         app.instance_id = compute_client.create(
