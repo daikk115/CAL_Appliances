@@ -148,7 +148,10 @@ class AppView(LoginRequiredMixin, TemplateView):
                             resource='network',
                             provider=p
                             )
-            real_network_id_ops = network_client.show(app.network_id).get('network_id')
+            if provider.type == 'openstack':
+                real_network_id = network_client.show(app.network_id).get('network_id')z
+            else:
+                real_network_id = app.network_id
 
             kwargs = {
                 "{}".format(userdata_parameter.get(provider.type)): format_userdata_start(
@@ -157,7 +160,7 @@ class AppView(LoginRequiredMixin, TemplateView):
             app.instance_id = compute_client.create(
                 image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
                 configurations.get(provider.type), # Flavor
-                real_network_id_ops, # 
+                real_network_id, # 
                 None, 1,  # need two by lossing add default in base class
                 **kwargs
             )
