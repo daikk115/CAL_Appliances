@@ -103,8 +103,12 @@
                                                 Detail
                                             </a><br/>
                                             <ul>
-                                                <li>Public IP: &nbsp;</li> {{ app.ip.PublicIps.0 }}
-                                                <li>Private IP: &nbsp;</li> {{ app.ip.PrivateIps.0 }}
+                                                {% if app.ip.PublicIps.0 %}
+                                                    <li>Public IP: &nbsp;</li> {{ app.ip.PublicIps.0 }}
+                                                {% endif %}
+                                                {% if app.ip.PrivateIps.0 %}
+                                                    <li>Private IP: &nbsp;</li> {{ app.ip.PrivateIps.0 }}
+                                                {% endif %}
                                             </ul>
                                             <div class="modal fade" id="show-app-{{ app.id }}"
                                                  tabindex="-1"
