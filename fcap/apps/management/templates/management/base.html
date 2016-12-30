@@ -184,7 +184,7 @@
             type: "GET",
 
             success: function (response) {
-                $('#list-provider-to-migrate').html(response);
+		$("[id=list-provider-to-migrate]").html(response);
                 list_network_to_migrate();
             }
         });
@@ -196,7 +196,7 @@
             data: {provider_id: $('#list-provider-to-migrate').val()},
 
             success: function (response) {
-                $('#list-network-to-migrate').html(response);
+		$("[id=list-network-to-migrate]").html(response);
             }
         });
     };
