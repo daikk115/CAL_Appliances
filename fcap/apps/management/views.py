@@ -95,6 +95,7 @@ class AppView(LoginRequiredMixin, TemplateView):
 
         apps = App.objects.filter(provider_id__in=list_provider_id)
         for app in apps:
+            app.ip = json.loads(app.ip)
             setattr(app, 'config', format_config(
                 {
                     'Docker Image': app.docker_image,

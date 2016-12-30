@@ -100,8 +100,12 @@
                                         <td name="ip">
                                             <a href="#" data-toggle="modal"
                                                data-target="#show-app-{{ app.id }}">
-                                                IPAdress: {{ app.ip }}
-                                            </a>
+                                                Detail
+                                            </a><br/>
+                                            <ul>
+                                                <li>Public IP: &nbsp;</li> {{ app.ip.PublicIps.0 }}
+                                                <li>Private IP: &nbsp;</li> {{ app.ip.PrivateIps.0 }}
+                                            </ul>
                                             <div class="modal fade" id="show-app-{{ app.id }}"
                                                  tabindex="-1"
                                                  role="dialog"
@@ -115,7 +119,7 @@
                                                                     aria-hidden="true">&times;</button>
                                                             <h4 class="modal-title"
                                                                 id="show-app-{{ app.id }}-Label">
-                                                                IPAdress: {{ app.ip }}
+                                                                Developing
                                                             </h4>
                                                         </div>
                                                         <div class="modal-body">
