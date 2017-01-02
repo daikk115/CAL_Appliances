@@ -18,7 +18,7 @@ from calplus.client import Client
 
 image_ids = {
         'openstack': '82eaaf2a-a417-4273-ae80-f44119013613',
-        'amazon': 'ami-27e2ffd1'
+        'amazon': 'ami-cedfed17'
     }
 
 userdata_parameter = {
@@ -253,7 +253,7 @@ class NetworkView(LoginRequiredMixin, TemplateView):
                 network.internet_id = gateway
                 del network_client
             except Exception as e:
-                raise e
+                pass
 
         network.save()
         return redirect("/network")
@@ -378,7 +378,10 @@ class AboutView(LoginRequiredMixin, TemplateView):
 def delete_provider(request):
     id = request.POST.get('id')
     if id:
-        Provider.objects.filter(id=id).delete()
+	try:
+	    Provider.objects.filter(id=id).delete()
+	except Exception as e:
+            pass
 
     return redirect("/provider")
 
@@ -413,7 +416,7 @@ def delete_network(request):
             network.delete()
             del network_client
         except Exception as e:
-            raise e
+            pass
         finally:
             pass
 
@@ -447,7 +450,7 @@ def delete_app(request):
             compute_client.delete(app.instance_id)
             app.delete()
         except Exception as e:
-            raise e
+            pass
         finally:
             pass
 
@@ -457,50 +460,52 @@ def delete_app(request):
 def migrate_app(request):
     id = request.POST.get('id')
     if id:
-        # Get an exist provider
-        old_app = App.objects.get(id=id)
+	try:
+       		# Get an exist provider
+	        old_app = App.objects.get(id=id)
 
-        # Crete provider
-        app = App()
+        	# Crete provider
+	        app = App()
 
-        # MIGRATE APP ON DATABASE
-        app.name = old_app.name
-        app.ports = old_app.ports
-        app.start_script = old_app.start_script
-        app.docker_image = old_app.docker_image
-        app.network_id = old_app.network_id
-        app.provider_id = request.POST.get('provider-id')
+	        # MIGRATE APP ON DATABASE
+        	app.name = old_app.name
+	        app.ports = old_app.ports
+	        app.start_script = old_app.start_script
+	        app.docker_image = old_app.docker_image
+	        app.network_id = request.POST.get('network-id')
+        	app.provider_id = request.POST.get('provider-id')
 
-        # MIGRATE APP ON CLOUD
-        provider = Provider.objects.get(id=app.provider_id)
-        p = calplus_provider.Provider(provider.type,
-            dict(json.loads(provider.config)))
-        compute_client = Client(version='1.0.0',
-                        resource='compute',
+	        # MIGRATE APP ON CLOUD
+	        provider = Provider.objects.get(id=app.provider_id)
+	        p = calplus_provider.Provider(provider.type,
+	            dict(json.loads(provider.config)))
+	        compute_client = Client(version='1.0.0',
+	                        resource='compute',
                         provider=p
-                        )
-        network_client = Client(version='1.0.0',
-                        resource='network',
-                        provider=p
-                        )
-        real_network_id_ops = network_client.show(app.network_id).get('network_id')
-        public_ip =  json.loads(old_app.ip).get('PublicIps')[0]
-
-        kwargs = {
-            "{}".format(userdata_parameter.get(provider.type)): format_userdata_migrate(
-                app.name, app.docker_image, app.start_script, public_ip)
-        }
-        app.instance_id = compute_client.create(
-            image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
-            '2', # Flavor
-            real_network_id_ops, # 
-            None, 1,  # need two by lossing add default in base class
-            **kwargs
-        )
-        sleep(5)
-        app.ip = json.dumps(compute_client.list_ip(app.instance_id))
-        app.save()
-
+	                        )
+        	network_client = Client(version='1.0.0',
+                	        resource='network',
+                        	provider=p
+                        	)
+	        real_network_id_ops = network_client.show(app.network_id).get('network_id')
+        	public_ip =  json.loads(old_app.ip).get('PublicIps')[0]
+	
+        	kwargs = {
+	            "{}".format(userdata_parameter.get(provider.type)): format_userdata_migrate(
+        	        app.name, app.docker_image, app.start_script, public_ip)
+	        }
+        	app.instance_id = compute_client.create(
+	            image_ids.get(provider.type), #id of Ubuntu Docker checkpoint v2 image
+        	    '2', # Flavor
+	            real_network_id_ops, # 
+	            None, 1,  # need two by lossing add default in base class
+        	    **kwargs
+	        )
+	        sleep(5)
+	        app.ip = json.dumps(compute_client.list_ip(app.instance_id))
+	        app.save()
+	except:
+		pass
     return redirect("/app")
 
 @require_POST
@@ -532,7 +537,7 @@ def add_public_ip(request):
             compute_client.associate_public_ip(app.instance_id, addr_id)
             app.save()
         except:
-            raise
+            pass
 
     return redirect("/app")
 
@@ -563,7 +568,7 @@ def delete_public_ip(request):
             network_client.release_public_ip(addr_id)
             app.save()
         except:
-            raise
+            pass
 
     return redirect("/app")
 
